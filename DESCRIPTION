@@ -1,0 +1,25 @@
+Package: MerfishData
+Title: Collection of public MERFISH datasets
+Version: 0.99.0
+Date: 2022-05-10
+Authors@R: 
+    person("Ludwig", "Geistlinger", , "ludwig_geistlinger@hms.harvard.edu", 
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2495-5464"))
+Description: MerfishData is an ExperimentHub package that serves publicly available
+    datasets obtained with Multiplexed Error-Robust Fluorescence in situ Hybridization
+    (MERFISH). MERFISH is a massively multiplexed single-molecule imaging technology
+    capable of simultaneously measuring the copy number and spatial distribution
+    of hundreds to tens of thousands of RNA species in individual cells. The scope
+    of the package is to provide MERFISH data for benchmarking and analysis.
+License: Artistic-2.0
+BugReports: https://support.bioconductor.org/t/MerfishData
+Imports: 
+    ExperimentHub
+Suggests: 
+    testthat (>= 3.0.0),
+    ExperimentHubData
+biocViews: ExperimentHub
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Config/testthat/edition: 3
