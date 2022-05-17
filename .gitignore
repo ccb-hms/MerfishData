@@ -37,3 +37,11 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+inst/doc
+
+# pkdown
+docs
+.DS_Store
+
+# rsconnect
+^rsconnect$
