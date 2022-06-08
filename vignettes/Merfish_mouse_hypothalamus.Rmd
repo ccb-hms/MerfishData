@@ -1,0 +1,49 @@
+---
+title: "Import and representation of MERFISH mouse hypothalamus data"
+author: "Ludwig Geistlinger and Robert Gentleman"
+affiliation: Center for Computational Biomedicine, Harvard Medical School
+output:
+  BiocStyle::html_document:
+    self_contained: yes 
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+vignette: >
+  % \VignetteIndexEntry{Mouse hypothalamus}
+  % \VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+# Setup
+
+```{r, message = FALSE}
+library(ExperimentHub)
+library(EBImage)
+```
+
+# Data
+
+Def. hypothalamic preoptic region: is a part of the anterior hypothalamus that 
+controls essential social behaviors and homeostatic functions.
+
+
+```{r}
+eh <- ExperimentHub()
+query(eh, c("MerfishData", "hypothalamus"))
+```
+
+## Segmented data
+
+Dimensions: 1,027,848 cells; 161 genes
+
+

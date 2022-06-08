@@ -1,0 +1,80 @@
+---
+title: "Import and representation of MERFISH mouse ileum data"
+author: "Ludwig Geistlinger and Robert Gentleman"
+affiliation: Center for Computational Biomedicine, Harvard Medical School
+output:
+  BiocStyle::html_document:
+    self_contained: yes 
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+vignette: >
+  % \VignetteIndexEntry{Mouse ileum}
+  % \VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+# Setup
+
+```{r, message = FALSE}
+library(ExperimentHub)
+library(EBImage)
+```
+
+# Data
+
+Def. ileum: the final and longest segment of the small intestine.
+
+```{r}
+eh <- ExperimentHub()
+query(eh, c("MerfishData", "ileum"))
+```
+
+## Raw data
+
+mRNA molecule data: 820k observations for 241 genes
+
+```{r, message = FALSE, warning = FALSE}
+mol.dat <- eh[["EH7543"]]
+dim(mol.dat)
+head(mol.dat)
+length(unique(mol.dat$gene))
+```
+
+Image data: 
+
+1. [DAPI](https://en.wikipedia.org/wiki/DAPI) stain signal:
+
+```{r, message = FALSE, warning = FALSE, fig.height = 10}
+dapi.img <- eh[["EH7544"]]
+dapi.img
+plot(dapi.img, all = TRUE)
+plot(dapi.img, frame = 1)
+```
+
+2. Membrane Na+/K+ - ATPase immunofluorescence signal:
+
+```{r, message = FALSE, warning = FALSE, fig.height = 10}
+mem.img <- eh[["EH7545"]]
+mem.img
+plot(mem.img, all = TRUE)
+plot(mem.img, frame = 1)
+```
+
+## Segmentation
+
+### Baysor
+
+### Cellpose
+
+# Visualization
