@@ -27,23 +27,91 @@ knitr::opts_chunk$set(
 # Setup
 
 ```{r, message = FALSE}
+library(MerfishData)
 library(ExperimentHub)
-library(EBImage)
+library(ggpubr)
 ```
 
 # Data
 
+[paper](https://doi.org/10.1126/science.aau5324)
+
 Def. hypothalamic preoptic region: is a part of the anterior hypothalamus that 
 controls essential social behaviors and homeostatic functions.
 
+Cell segmentation was carried out based on total polyadenylated mRNA and
+DAPI nuclei costains. Combinatorial smFISH imaging was used for the 
+identification and spatial expression profiling of 161 genes in 1,027,848 cells
+from 36 mice (16 female, 20 male).
+
+The data was obtained from the 
+[datadryad data publication](https://doi.org/10.5061/dryad.8t8s248)
 
 ```{r}
 eh <- ExperimentHub()
 query(eh, c("MerfishData", "hypothalamus"))
 ```
 
+Note: complementary scRNA-seq of ~31,000 cells dissociated and captured from the
+preoptic region of the hypothalamus from multiple male and female mice is available
+on GEO ([GSE113576](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE113576)).
+
 ## Segmented data
 
-Dimensions: 1,027,848 cells; 161 genes
+```{r}
+spe <- MouseHypothalamusMofitt2018()
+spe
+```
 
+```{r}
+assay(spe)[1:5,1:5]
+colData(spe)
+head(spatialCoords(spe))
+```
 
+Def. Bregma: The bregma is the anatomical point on the skull at which the coronal
+suture is intersected perpendicularly by the sagittal suture. Used here as a 
+reference point for the twelve 1.8- by 1.8-mm imaged slices along the z-axis.
+
+The anterior position of the preoptic region is at Bregma +0.26.
+
+```{r}
+table(spatialCoords(spe)[,"z"])
+```
+
+Cell type assignment:
+
+```{r}
+table(spe$cell_class)
+```
+
+# Visualization
+
+Visualize as in Figure 3E of the 
+[paper](https://doi.org/10.1126/science.aau5324)
+for six different anterior-posterior positions from a single female mouse.
+
+```{r}
+relz <- c(0.26, 0.16, 0.06, -0.04, -0.14, -0.24)
+cdat <- data.frame(colData(spe), spatialCoords(spe))
+cdat <- subset(cdat, cell_class != "Ambiguous")
+cdat$cell_class <- sub(" [1-4]$", "", cdat$cell_class)
+cdat <- subset(cdat, z %in% relz)
+cdat$z <- as.character(cdat$z)
+zum <- paste(0:5 * 100, "um")
+names(zum) <- as.character(relz)
+cdat$z <- unname(zum[cdat$z]) 
+```
+
+```{r, fig.wide = TRUE, fig.width = 10, fig.height = 10}
+pal <- get_palette("simpsons", 9)
+names(pal) <- c("Endothelial", "Excitatory", "OD Immature", "Astrocyte", "Mural",
+                "Microglia", "Ependymal", "Inhibitory", "OD Mature")
+ggscatter(cdat, x = "x", y = "y", color = "cell_class", facet.by = "z",
+          shape = 20, size = 1, palette = pal) +
+          guides(color = guide_legend(override.aes = list(size = 3)))
+```
+
+# Interactive exploration
+
+[MERFISH gallery](https://ccb-rstudio-connect.hms.harvard.edu/merfish/merfish_homepage.html)

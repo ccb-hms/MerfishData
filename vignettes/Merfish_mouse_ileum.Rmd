@@ -27,8 +27,8 @@ knitr::opts_chunk$set(
 # Setup
 
 ```{r, message = FALSE}
+library(MerfishData)
 library(ExperimentHub)
-library(EBImage)
 ```
 
 # Data
@@ -57,6 +57,7 @@ Image data:
 
 ```{r, message = FALSE, warning = FALSE, fig.height = 10}
 dapi.img <- eh[["EH7544"]]
+dapi.img <- flip(dapi.img)
 dapi.img
 plot(dapi.img, all = TRUE)
 plot(dapi.img, frame = 1)
@@ -66,6 +67,7 @@ plot(dapi.img, frame = 1)
 
 ```{r, message = FALSE, warning = FALSE, fig.height = 10}
 mem.img <- eh[["EH7545"]]
+mem.img <- flip(dapi.img)
 mem.img
 plot(mem.img, all = TRUE)
 plot(mem.img, frame = 1)
@@ -78,3 +80,5 @@ plot(mem.img, frame = 1)
 ### Cellpose
 
 # Visualization
+
+# Interactive exploration

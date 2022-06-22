@@ -12,14 +12,23 @@ Description: MerfishData is an ExperimentHub package that serves publicly availa
     of hundreds to tens of thousands of RNA species in individual cells. The scope
     of the package is to provide MERFISH data for benchmarking and analysis.
 License: Artistic-2.0
-BugReports: https://support.bioconductor.org/t/MerfishData
+VignetteBuilder: knitr
+LazyData: true
+URL: https://github.com/ccb-hms/MerfishData
+BugReports: https://github.com/ccb-hms/MerfishData/issues
+Depends:
+    R (>= 4.1.0),
+    EBImage,
+    SpatialExperiment
 Imports: 
+    BumpyMatrix,
     ExperimentHub
 Suggests: 
-    testthat (>= 3.0.0),
+    rmarkdown,
+    testthat,
+    BiocStyle,
     ExperimentHubData
 biocViews: ExperimentHub, Mus_musculus_Data, ExpressionData, HighThroughputImagingData
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
-Config/testthat/edition: 3
+RoxygenNote: 7.2.0
