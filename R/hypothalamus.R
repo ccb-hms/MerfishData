@@ -1,12 +1,12 @@
-#' MERFISH mouse hypothalamus dataset from Mofitt et al., 2018
+#' MERFISH mouse hypothalamus dataset from Moffitt et al., 2018
 #' @description Obtain the MERFISH mouse hypothalamic preoptic region dataset
-#' from Mofitt et al., 2018
+#' from Moffitt et al., 2018
 #' @details The hypothalamus controls essential social behaviors and homeostatic
 #' functions. However, the cellular architecture of hypothalamic nuclei, including
 #' the molecular identity, spatial organization, and function of distinct cell
 #' types, is not well understood.
 #'
-#' Mofitt et al., 2018 developed an imaging-based cell type identification and
+#' Moffitt et al., 2018, developed an imaging-based cell type identification and
 #' mapping method and combined it with single-cell RNA-sequencing to create a
 #' molecularly annotated and spatially resolved cell atlas of the mouse hypothalamic
 #' preoptic region.  
@@ -16,13 +16,13 @@
 #' Defaults to \code{TRUE}. Use \code{FALSE} to obtain the coordinates as
 #' provided in the data release.
 #' @return An object of class \code{\linkS4class{SpatialExperiment}}.
-#' @references Mofitt et al. (2018) Molecular, spatial, and functional
+#' @references Moffitt et al. (2018) Molecular, spatial, and functional
 #' single-cell profiling of the hypothalamic preoptic region. 
 #' Science, 362(6416), eaau5324.
 #' @source \url{https://doi.org/10.5061/dryad.8t8s248}
-#' @examples spe <- MouseHypothalamusMofitt2018()
+#' @examples spe <- MouseHypothalamusMoffitt2018()
 #' @export
-MouseHypothalamusMofitt2018 <- function(center.coords = TRUE)
+MouseHypothalamusMoffitt2018 <- function(center.coords = TRUE)
 {
     eh <- ExperimentHub::ExperimentHub()
     recs <- AnnotationHub::query(eh, c("MERFISH", "Mofitt2018"))
@@ -41,7 +41,8 @@ MouseHypothalamusMofitt2018 <- function(center.coords = TRUE)
     ind <- grep("Neuron_cluster_ID", colnames(seg.dat))
     genes <- colnames(seg.dat)[(ind + 1):ncol(seg.dat)]
     exprs <- t(as.matrix(seg.dat[,genes]))
-    
+    colnames(exprs) <- NULL 
+   
     # (4) cell metadata (colData)
     cdat <- seg.dat[,seq_len(ind)]
     colnames(cdat)[c(2:3,5:7)] <- c("sample_id", "sex", "z", "x", "y")

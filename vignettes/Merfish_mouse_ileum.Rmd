@@ -1,7 +1,14 @@
 ---
 title: "Import and representation of MERFISH mouse ileum data"
-author: "Ludwig Geistlinger and Robert Gentleman"
-affiliation: Center for Computational Biomedicine, Harvard Medical School
+author: 
+  - name: Ludwig Geistlinger    
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
+  - name: Tyrone Lee  
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
+  - name: Jeffrey Moffitt
+    affiliation: Department of Microbiology, Harvard Medical School
+  - name: Robert Gentleman
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
 output:
   BiocStyle::html_document:
     self_contained: yes 
@@ -29,11 +36,55 @@ knitr::opts_chunk$set(
 ```{r, message = FALSE}
 library(MerfishData)
 library(ExperimentHub)
+library(ggplot2)
+library(grid)
 ```
 
 # Data
 
+Spatial transcriptomics protocols based on in situ sequencing or multiplexed
+RNA fluorescent hybridization can reveal detailed tissue organization.
+However, distinguishing the boundaries of individual cells in such data is
+challenging. Current segmentation methods typically approximate cells positions
+using nuclei stains.
+
+[Petukhov et al., 2021](https://doi.org/10.1038/s41587-021-01044-w), 
+describe 
+[Baysor](https://github.com/kharchenkolab/Baysor),
+a segmentation method, which optimizes
+2D or 3D cell boundaries considering joint likelihood of transcriptional composition
+and cell morphology. Baysor can also perform segmentation based on the detected
+transcripts alone.
+
+[Petukhov et al., 2021](https://doi.org/10.1038/s41587-021-01044-w), 
+compare the results of Baysor segmentation
+(mRNA-only) to the results of a deep learning-based segmentation
+method called 
+[Cellpose](https://github.com/MouseLand/cellpose) from 
+[Stringer et al., 2021](https://doi.org/10.1038/s41592-020-01018-x). 
+Cellpose applies a machine learning framework for the segmentation of cell
+bodies, membranes and nuclei from microscopy images.
+
+[Petukhov et al., 2021](https://doi.org/10.1038/s41587-021-01044-w) apply
+Baysor and Cellpose to MERFISH data from cryosections of mouse ileum. 
+The MERFISH encoding probe library was designed to target 241 genes, including
+previously defined markers for the majority of gut cell types.
+
 Def. ileum: the final and longest segment of the small intestine.
+
+Samples were also stained with anti-Na+/K+-ATPase primary antibodies,
+oligo-labeled secondary antibodies and DAPI. MERFISH measurements across
+multiple fields of view and nine *z* planes were performed to provide
+a volumetric reconstruction of the distribution of the targeted
+mRNAs, the cell boundaries marked by Na+/K+-ATPase IF and cell
+nuclei stained with DAPI.
+
+The data was obtained from the 
+[datadryad data publication](https://doi.org/10.5061/dryad.jm63xsjb2). 
+
+This vignette demonstrates how to obtain the MERFISH mouse ileum dataset from
+[Petukhov et al., 2021](https://doi.org/10.1038/s41587-021-01044-w)
+from Bioconductor's [ExperimentHub](https://bioconductor.org/packages/ExperimentHub).
 
 ```{r}
 eh <- ExperimentHub()
@@ -44,7 +95,7 @@ query(eh, c("MerfishData", "ileum"))
 
 mRNA molecule data: 820k observations for 241 genes
 
-```{r, message = FALSE, warning = FALSE}
+```{r mol-data, message = FALSE, warning = FALSE}
 mol.dat <- eh[["EH7543"]]
 dim(mol.dat)
 head(mol.dat)
@@ -55,9 +106,9 @@ Image data:
 
 1. [DAPI](https://en.wikipedia.org/wiki/DAPI) stain signal:
 
-```{r, message = FALSE, warning = FALSE, fig.height = 10}
+```{r dapi-img, message = FALSE, warning = FALSE, fig.height = 10}
 dapi.img <- eh[["EH7544"]]
-dapi.img <- flip(dapi.img)
+#dapi.img <- flip(dapi.img)
 dapi.img
 plot(dapi.img, all = TRUE)
 plot(dapi.img, frame = 1)
@@ -65,9 +116,17 @@ plot(dapi.img, frame = 1)
 
 2. Membrane Na+/K+ - ATPase immunofluorescence signal:
 
-```{r, message = FALSE, warning = FALSE, fig.height = 10}
+While total poly(A) and DAPI staining can provide feature-rich costains suitable
+for segmentation in cell-sparse tissues such as the brain, such stains are not
+as useful for segmentation in cellular-dense tissues.
+To address this challenge, 
+[Petukhov et al., 2021](https://doi.org/10.1038/s41587-021-01044-w)
+developed protocols to combine immunofluorescence (IF) of a pan-cell-type cell
+surface marker, the Na+/K+-ATPase, with MERFISH.
+
+```{r mem-img, message = FALSE, warning = FALSE, fig.height = 10}
 mem.img <- eh[["EH7545"]]
-mem.img <- flip(dapi.img)
+#mem.img <- flip(mem.img)
 mem.img
 plot(mem.img, all = TRUE)
 plot(mem.img, frame = 1)
@@ -75,10 +134,209 @@ plot(mem.img, frame = 1)
 
 ## Segmentation
 
+It is also possible to obtain the data in a 
+[SpatialExperiment](https://bioconductor.org/packages/SpatialExperiment), 
+which integrates the segmented experimental data and cell metadata, and provides
+designated accessors for the spatial coordinates and the image data.
+
 ### Baysor
+
+Obtain dataset segmented with Baysor:
+
+```{r baysor-spe, message = FALSE}
+spe.baysor <- MouseIleumPetukhov2021(segmentation = "baysor")
+spe.baysor
+```
+
+Inspect dataset:
+
+```{r baysor-spe-show}
+assay(spe.baysor, "counts")[1:5,1:5]
+assay(spe.baysor, "molecules")["Acsl1",5]
+colData(spe.baysor)
+head(spatialCoords(spe.baysor))
+imgData(spe.baysor)
+```
 
 ### Cellpose
 
+Obtain dataset segmented with Cellpose:
+
+```{r cellpose-spe, message = FALSE}
+spe.cellpose <- MouseIleumPetukhov2021(segmentation = "cellpose",
+                                       use.images = FALSE)
+spe.cellpose
+```
+
+Inspect dataset:
+
+```{r cellpose-spe-show}
+assay(spe.cellpose, "counts")[1:5,1:5]
+colData(spe.cellpose)
+head(spatialCoords(spe.cellpose))
+```
+
+### Segmentation cell counts (by cell type):
+
+Here we inspect the difference in cell counts for the both segmentation methods,
+stratified by cell type label obtained from leiden clustering and annotation by
+marker gene expression:
+
+```{r fig.width = 6, fig.height = 4}
+seg <- rep(c("baysor", "cellpose"), c(ncol(spe.baysor), ncol(spe.cellpose)))
+ns <- table(seg, c(spe.baysor$leiden_final, spe.cellpose$leiden_final))
+df <- as.data.frame(ns, responseName = "n_cells")
+colnames(df)[2] <- "leiden_final"
+ggplot(df, aes(
+    reorder(leiden_final, n_cells), n_cells, fill = seg)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    xlab("") +
+    ylab("Number of cells") + 
+    # scale_x_reordered(NULL) + 
+    theme_bw() +
+    theme(
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
 # Visualization
 
+For visualization purposes, we focus in the following on the first *z*-plane
+of the membrane staining image.
+
+```{r}
+mem.img <- imgRaster(spe.baysor, image_id = "membrane")
+```
+
+## Cell metdata
+
+Overlay cell type annotation as in Figure 6 of the 
+[publication](https://doi.org/10.1038/s41587-021-01044-w).
+We define a helper function to help with plotting.
+
+```{r}
+plotXY <- function(df, col, img = NULL) {
+    if (!is.null(img)) {
+        grb <- rasterGrob(img,
+            interpolate = FALSE,
+            width = unit(1, "npc"),
+            height = unit(1, "npc"))
+        p <- ggplot() + 
+            annotation_custom(
+                grob = grb,
+                xmin = 0,
+                xmax = ncol(grb$raster),
+                ymin = 0,
+                ymax = nrow(grb$raster)) + 
+            coord_fixed(
+                xlim = c(0, ncol(grb$raster)),
+                ylim = c(0, nrow(grb$raster))) 
+    } else {
+        p <- ggplot()
+    }
+    p <- p + 
+        geom_point(
+            data = df,
+            shape = 16,
+            size = 0.5,
+            aes(x, y, col = .data[[col]])) + 
+        theme_void()
+    if (is.numeric(df[[col]])) {
+        p + scale_color_viridis_c()
+    } else {
+        p + theme(legend.key.size = unit(0.5, "lines")) +
+            guides(color = guide_legend(override.aes = list(size = 2)))
+    }
+}
+```
+
+We then use this function to overlay cell metadata attributes onto the image.
+
+```{r viz-cells, results = "asis", fig.width = 4, fig.height = 6, warning = FALSE}
+# for each segmentation...
+for (n in c("Baysor", "Cellpose"))
+{
+    cat("### ", n, " {.tabset} \n\n")
+    spe <- if(n == "Baysor") spe.baysor else spe.cellpose
+    df <- data.frame(
+        colData(spe), 
+        spatialCoords(spe))
+    rel.cols <- c("sample_id", "cell", "seg", "x", "y")
+    rel.cols <- setdiff(names(df), rel.cols)
+    # ...plot each variable
+    for (col in rel.cols)
+    {
+        p <- plotXY(df, col, mem.img)
+        cat("#### ", col, '{-}',"\n")
+        print(p)
+        cat("\n\n")
+    }
+}
+```
+
+## Marker gene expression
+
+## Segmentation cell borders
+
+Here, we illustrate segmentation borders for the first *z*-plane:
+
+```{r}
+poly <- metadata(spe.baysor)$polygons
+poly <- as.data.frame(poly)
+poly.z1 <- subset(poly, z == 1)
+```
+
+We add holes to the cell polygons:
+
+```{r}
+.f <- function(df) 
+{
+    df$x <- df$x + 0.5 * (mean(df$x) - df$x)
+    df$y <- df$y + 0.5 * (mean(df$y) - df$y)
+    return(df)
+}
+spl <- split(poly.z1, poly.z1$cell)
+dl <- lapply(spl, .f)
+holes <- do.call(rbind, dl)  
+poly.z1$subid <- 1L
+holes$subid <- 2L
+poly.z1 <- rbind(poly.z1, holes)
+```
+
+Plot over membrane image:
+
+```{r, fig.height = 8}
+grb <- rasterGrob(mem.img,
+    interpolate = FALSE,
+    width = unit(1, "npc"),
+    height = unit(1, "npc"))
+p <- ggplot() + 
+    annotation_custom(
+        grob = grb,
+        xmin = 0,
+        xmax = ncol(grb$raster),
+        ymin = 0,
+        ymax = nrow(grb$raster)) + 
+    coord_fixed(
+        xlim = c(0, ncol(grb$raster)),
+        ylim = c(0, nrow(grb$raster))) 
+p <- p + geom_polygon(
+            data = poly.z1,
+            aes(x = x, y = y, group = cell, subgroup = subid), 
+            fill = "lightblue")
+p + theme_void()
+```
+
 # Interactive exploration
+
+The MERFISH mouse ileum dataset is part of the
+[gallery of publicly available MERFISH datasets](https://ccb-rstudio-connect.hms.harvard.edu/merfish/merfish_homepage.html).
+
+This gallery consists of dedicated 
+[iSEE](https://bioconductor.org/packages/iSEE) and 
+[Vitessce](http://vitessce.io/) instances, published on 
+[RStudioConnect](https://www.rstudio.com/products/connect/), 
+that enable the interactive exploration of different segmentations,
+the expression of marker genes, and overlay of
+cell metadata on a spatial grid or a microscopy image.
+

@@ -23,7 +23,10 @@ Depends:
 Imports: 
     BumpyMatrix,
     ExperimentHub
-Suggests: 
+Suggests:
+    grid,
+    ggplot2, 
+    ggpubr,
     rmarkdown,
     testthat,
     BiocStyle,

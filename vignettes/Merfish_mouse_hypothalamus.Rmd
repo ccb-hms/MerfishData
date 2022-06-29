@@ -1,7 +1,14 @@
 ---
 title: "Import and representation of MERFISH mouse hypothalamus data"
-author: "Ludwig Geistlinger and Robert Gentleman"
-affiliation: Center for Computational Biomedicine, Harvard Medical School
+author: 
+  - name: Ludwig Geistlinger    
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
+  - name: Tyrone Lee  
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
+  - name: Jeffrey Moffitt
+    affiliation: Department of Microbiology, Harvard Medical School
+  - name: Robert Gentleman
+    affiliation: Center for Computational Biomedicine, Harvard Medical School
 output:
   BiocStyle::html_document:
     self_contained: yes 
@@ -34,7 +41,10 @@ library(ggpubr)
 
 # Data
 
-[paper](https://doi.org/10.1126/science.aau5324)
+[Moffitt et al., 2018](https://doi.org/10.1126/science.aau5324) 
+developed an imaging-based cell type identification and mapping method and
+combined it with single-cell RNA-sequencing to create a molecularly annotated
+and spatially resolved cell atlas of the mouse hypothalamic preoptic region.
 
 Def. hypothalamic preoptic region: is a part of the anterior hypothalamus that 
 controls essential social behaviors and homeostatic functions.
@@ -45,7 +55,11 @@ identification and spatial expression profiling of 161 genes in 1,027,848 cells
 from 36 mice (16 female, 20 male).
 
 The data was obtained from the 
-[datadryad data publication](https://doi.org/10.5061/dryad.8t8s248)
+[datadryad data publication](https://doi.org/10.5061/dryad.8t8s248).
+
+This vignette demonstrates how to obtain the MERFISH mouse hypothalamic preoptic
+region dataset from [Moffitt et al., 2018](https://doi.org/10.1126/science.aau5324)
+from Bioconductor's [ExperimentHub](https://bioconductor.org/packages/ExperimentHub).
 
 ```{r}
 eh <- ExperimentHub()
@@ -58,10 +72,14 @@ on GEO ([GSE113576](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE113576
 
 ## Segmented data
 
-```{r}
-spe <- MouseHypothalamusMofitt2018()
+It is also possible to obtain the data in a [SpatialExperiment](https://bioconductor.org/packages/ExperimentHub), which integrates experimental data and cell metadata, and provides designated accessors for the spatial coordinates.
+
+```{r, message = FALSE}
+spe <- MouseHypothalamusMoffitt2018()
 spe
 ```
+
+Inspect the data components:
 
 ```{r}
 assay(spe)[1:5,1:5]
@@ -87,7 +105,7 @@ table(spe$cell_class)
 
 # Visualization
 
-Visualize as in Figure 3E of the 
+Visualize cell centroids and annotated cell type labels as in Figure 3E of the 
 [paper](https://doi.org/10.1126/science.aau5324)
 for six different anterior-posterior positions from a single female mouse.
 
@@ -114,4 +132,13 @@ ggscatter(cdat, x = "x", y = "y", color = "cell_class", facet.by = "z",
 
 # Interactive exploration
 
-[MERFISH gallery](https://ccb-rstudio-connect.hms.harvard.edu/merfish/merfish_homepage.html)
+The MERFISH mouse hypothalamus dataset is part of the
+[gallery of publicly available MERFISH datasets](https://ccb-rstudio-connect.hms.harvard.edu/merfish/merfish_homepage.html).
+
+This gallery consists of dedicated 
+[iSEE](https://bioconductor.org/packages/iSEE) and 
+[Vitessce](http://vitessce.io/) instances, published on 
+[RStudioConnect](https://www.rstudio.com/products/connect/), 
+that enable the interactive exploration of different segmentations,
+the expression of marker genes, and overlay of
+cell metadata on a spatial grid or a microscopy image.

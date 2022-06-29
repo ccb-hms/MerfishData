@@ -19,7 +19,8 @@ MouseIleumPetukhov2021(
 
 \item{use.images}{logical. Should DAPI and Membrane Na+/K+ - ATPase images
 be loaded into memory and annotated to the \code{\link{imgData}} slot of
-the returned \code{\linkS4class{SpatialExperiment}}? Defaults to \code{TRUE}.}
+the returned \code{\linkS4class{SpatialExperiment}}? Defaults to \code{TRUE}.
+See details.}
 
 \item{use.polygons}{logical. Should polygon cell boundaries be annotated
 to the \code{\link{colData}} of the returned \code{\linkS4class{SpatialExperiment}}?
@@ -50,6 +51,12 @@ segmentation of cell bodies, membranes and nuclei from microscopy images.
 
 The function allows to obtain segmented MERFISH mouse ileum data for both
 segmentation methods.
+
+A note on storing images within a \code{\linkS4class{SpatialExperiment}}:
+The default \code{use.images = TRUE} reduces the 9-frame z-stack images
+for DAPI stain and Membrane Na+/K+ - ATPase fluorecense to single-frame
+images (taking the first frame). For working with the 9-frame z-stack
+images it is recommended to load the images individually from ExperimentHub.
 }
 \examples{
 spe <- MouseIleumPetukhov2021()

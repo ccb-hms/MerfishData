@@ -10,5 +10,5 @@
 #' @name MerfishData-package
 #' @aliases MerfishData-package MerfishData
 #' @docType package
-#' @author Ludwig Geistlinger <ludwig_geistlinger@hms.harvard.edu>
+#' @author Ludwig Geistlinger <ludwig_geistlinger@@hms.harvard.edu>
 NULL

@@ -17,14 +17,21 @@
 #' segmentation of cell bodies, membranes and nuclei from microscopy images.
 #' 
 #' The function allows to obtain segmented MERFISH mouse ileum data for both
-#' segmentation methods. 
+#' segmentation methods.
+#'
+#' A note on storing images within a \code{\linkS4class{SpatialExperiment}}:
+#' The default \code{use.images = TRUE} reduces the 9-frame z-stack images
+#' for DAPI stain and Membrane Na+/K+ - ATPase fluorecense to single-frame
+#' images (taking the first frame). For working with the 9-frame z-stack
+#' images it is recommended to load the images individually from ExperimentHub.
 #' @param segmentation character. Should be either \code{"baysor"} or
 #' \code{"cellpose"}. Defaults to \code{"baysor"}. See details.
 #' @param use.images logical. Should DAPI and Membrane Na+/K+ - ATPase images
 #' be loaded into memory and annotated to the \code{\link{imgData}} slot of
 #' the returned \code{\linkS4class{SpatialExperiment}}? Defaults to \code{TRUE}.
+#' See details.
 #' @param use.polygons logical. Should polygon cell boundaries be annotated
-#' to the \code{\link{colData}} of the returned \code{\linkS4class{SpatialExperiment}}? 
+#' to the \code{\link{metadata}} of the returned \code{\linkS4class{SpatialExperiment}}? 
 #' Defaults to \code{TRUE}. Only available for Baysor segmentation.
 #' @return An object of class \code{\linkS4class{SpatialExperiment}}.
 #' @references Petukhov et al. (2021) Cell segmentation in imaging-based
@@ -68,9 +75,6 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         # (5) segmentation
         mol <- .getSegmentation(recs, mol.dat)
         ass.dat <- c(ass.dat, molecules = mol)
-
-        # (6) polygons
-        if(use.polygons) col.dat <- .annotatePolygons(recs, col.dat)
         scn <- scn[1:2]    
     }
     
@@ -79,7 +83,10 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
                                                 colData = col.dat,
                                                 sample_id = "ileum",
                                                 spatialCoordsNames = scn)
-    if(use.images) SpatialExperiment::imgData(spe) <- img.dat 
+    if(use.images) SpatialExperiment::imgData(spe) <- img.dat
+    # (6) polygons
+    if(use.polygons && segmentation == "baysor")
+        metadata(spe)$polygons <- .annotatePolygons(recs)
     return(spe)
 }
 
@@ -119,8 +126,8 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         return(mol)
 }
 
-.annotatePolygons <- function(recs, col.dat)
+.annotatePolygons <- function(recs)
 {
-    # poly <- .getResource(recs, "_polygons")
-    return(col.dat)
+    poly <- .getResource(recs, "_polygons")
+    return(poly)
 }
