@@ -21,8 +21,10 @@ Depends:
     EBImage,
     SpatialExperiment
 Imports: 
+    AnnotationHub,
     BumpyMatrix,
-    ExperimentHub
+    ExperimentHub,
+    S4Vectors,
 Suggests:
     grid,
     ggplot2, 

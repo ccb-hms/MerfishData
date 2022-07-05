@@ -2,3 +2,5 @@
 
 export(MouseHypothalamusMoffitt2018)
 export(MouseIleumPetukhov2021)
+import(EBImage)
+import(SpatialExperiment)

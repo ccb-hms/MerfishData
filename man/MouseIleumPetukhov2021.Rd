@@ -23,7 +23,7 @@ the returned \code{\linkS4class{SpatialExperiment}}? Defaults to \code{TRUE}.
 See details.}
 
 \item{use.polygons}{logical. Should polygon cell boundaries be annotated
-to the \code{\link{colData}} of the returned \code{\linkS4class{SpatialExperiment}}?
+to the \code{\link{metadata}} of the returned \code{\linkS4class{SpatialExperiment}}?
 Defaults to \code{TRUE}. Only available for Baysor segmentation.}
 }
 \value{

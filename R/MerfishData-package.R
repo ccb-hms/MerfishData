@@ -11,4 +11,8 @@
 #' @aliases MerfishData-package MerfishData
 #' @docType package
 #' @author Ludwig Geistlinger <ludwig_geistlinger@@hms.harvard.edu>
+#' @import EBImage
+#' @import SpatialExperiment
+#' @importFrom grDevices as.raster
+#' @importFrom S4Vectors metadata metadata<-
 NULL
