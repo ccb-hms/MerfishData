@@ -27,6 +27,7 @@ Suggests:
     grid,
     ggplot2, 
     ggpubr,
+    knitr,
     rmarkdown,
     testthat,
     BiocStyle,
