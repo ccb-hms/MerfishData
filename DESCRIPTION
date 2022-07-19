@@ -3,8 +3,15 @@ Title: Collection of public MERFISH datasets
 Version: 0.99.0
 Date: 2022-05-10
 Authors@R: 
-    person("Ludwig", "Geistlinger", , "ludwig_geistlinger@hms.harvard.edu", 
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2495-5464"))
+    c(person("Ludwig", "Geistlinger", 
+             role = c("aut", "cre"),
+             email = "ludwig_geistlinger@hms.harvard.edu", 
+             comment = c(ORCID = "0000-0002-2495-5464")),
+      person("Tyrone", "Lee", role = "ctb"),
+      person("Helena", "Crowell", role = "ctb",
+             comment = c(ORCID = "0000-0002-4801-1767")),  
+      person("Jeffrey", "Mofitt", role = "aut"),
+      person("Robert", "Gentleman", role = "aut"))
 Description: MerfishData is an ExperimentHub package that serves publicly available
     datasets obtained with Multiplexed Error-Robust Fluorescence in situ Hybridization
     (MERFISH). MERFISH is a massively multiplexed single-molecule imaging technology
@@ -17,10 +24,11 @@ LazyData: true
 URL: https://github.com/ccb-hms/MerfishData
 BugReports: https://github.com/ccb-hms/MerfishData/issues
 Depends:
-    R (>= 4.1.0),
+    R (>= 4.2.0),
     EBImage,
     SpatialExperiment
 Imports: 
+    grDevices,
     AnnotationHub,
     BumpyMatrix,
     ExperimentHub,
@@ -34,7 +42,12 @@ Suggests:
     testthat,
     BiocStyle,
     ExperimentHubData
-biocViews: ExperimentHub, Mus_musculus_Data, ExpressionData, HighThroughputImagingData
+biocViews:
+    ExperimentHub,
+    ExpressionData,
+    HighThroughputImagingData,
+    Mus_musculus_Data,
+    SpatialData
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0

@@ -75,7 +75,7 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         # (5) segmentation
         mol <- .getSegmentation(recs, mol.dat)
         ass.dat <- c(ass.dat, molecules = mol)
-        scn <- scn[1:2]    
+        scn <- scn[seq_len(2)]    
     }
     
     # create SpatialExperiment object

@@ -276,6 +276,18 @@ for (n in c("Baysor", "Cellpose"))
 
 ## Marker gene expression
 
+We can also overlay the individual molecules of selected marker genes such as 
+the different cluster of differentiation genes assayed in the experiment: 
+
+```{r, fig.height = 8}
+gs <- grep("^Cd", unique(mol.dat$gene), value = TRUE)
+ind <- mol.dat$gene %in% gs
+rel.cols <- c("gene", "x_pixel", "y_pixel")
+sub.mol.dat <- mol.dat[ind, rel.cols]
+colnames(sub.mol.dat)[2:3] <- sub("_pixel$", "", colnames(sub.mol.dat)[2:3])
+plotXY(sub.mol.dat, "gene", mem.img)
+```
+
 ## Segmentation cell borders
 
 Here, we illustrate segmentation borders for the first *z*-plane:
@@ -340,3 +352,8 @@ that enable the interactive exploration of different segmentations,
 the expression of marker genes, and overlay of
 cell metadata on a spatial grid or a microscopy image.
 
+# SessionInfo
+
+```{r sessionInfo}
+sessionInfo()
+```

@@ -31,7 +31,20 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Installation
+
+To install the package, start R and enter: 
+
+```{r, eval = FALSE}
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("MerfishData")
+``` 
+
 # Setup
+
+After the installation, we proceed by loading the package and additional packages
+used in the vignette.
 
 ```{r, message = FALSE}
 library(MerfishData)
@@ -142,3 +155,9 @@ This gallery consists of dedicated
 that enable the interactive exploration of different segmentations,
 the expression of marker genes, and overlay of
 cell metadata on a spatial grid or a microscopy image.
+
+# SessionInfo
+
+```{r sessionInfo}
+sessionInfo()
+```
