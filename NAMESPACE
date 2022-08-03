@@ -2,6 +2,10 @@
 
 export(MouseHypothalamusMoffitt2018)
 export(MouseIleumPetukhov2021)
+export(addHolesToPolygons)
+export(plotRasterImage)
+export(plotTabset)
+export(plotXY)
 import(EBImage)
 import(SpatialExperiment)
 importFrom(S4Vectors,"metadata<-")

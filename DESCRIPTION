@@ -1,6 +1,6 @@
 Package: MerfishData
 Title: Collection of public MERFISH datasets
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: 
     c(person("Ludwig", "Geistlinger", 
              role = c("aut", "cre"),
@@ -19,7 +19,7 @@ Description: MerfishData is an ExperimentHub package that serves publicly availa
     of the package is to provide MERFISH data for benchmarking and analysis.
 License: Artistic-2.0
 VignetteBuilder: knitr
-LazyData: true
+LazyData: false
 URL: https://github.com/ccb-hms/MerfishData
 BugReports: https://github.com/ccb-hms/MerfishData/issues
 Depends:

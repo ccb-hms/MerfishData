@@ -108,7 +108,6 @@ Image data:
 
 ```{r dapi-img, message = FALSE, warning = FALSE, fig.height = 10}
 dapi.img <- eh[["EH7544"]]
-#dapi.img <- flip(dapi.img)
 dapi.img
 plot(dapi.img, all = TRUE)
 plot(dapi.img, frame = 1)
@@ -126,7 +125,6 @@ surface marker, the Na+/K+-ATPase, with MERFISH.
 
 ```{r mem-img, message = FALSE, warning = FALSE, fig.height = 10}
 mem.img <- eh[["EH7545"]]
-#mem.img <- flip(mem.img)
 mem.img
 plot(mem.img, all = TRUE)
 plot(mem.img, frame = 1)
@@ -192,7 +190,6 @@ ggplot(df, aes(
     geom_bar(stat = "identity", position = "dodge") +
     xlab("") +
     ylab("Number of cells") + 
-    # scale_x_reordered(NULL) + 
     theme_bw() +
     theme(
         panel.grid.minor = element_blank(),
@@ -208,70 +205,14 @@ of the membrane staining image.
 mem.img <- imgRaster(spe.baysor, image_id = "membrane")
 ```
 
-## Cell metdata
+## Cell metadata
 
 Overlay cell type annotation as in Figure 6 of the 
 [publication](https://doi.org/10.1038/s41587-021-01044-w).
-We define a helper function to help with plotting.
 
-```{r}
-plotXY <- function(df, col, img = NULL) {
-    if (!is.null(img)) {
-        grb <- rasterGrob(img,
-            interpolate = FALSE,
-            width = unit(1, "npc"),
-            height = unit(1, "npc"))
-        p <- ggplot() + 
-            annotation_custom(
-                grob = grb,
-                xmin = 0,
-                xmax = ncol(grb$raster),
-                ymin = 0,
-                ymax = nrow(grb$raster)) + 
-            coord_fixed(
-                xlim = c(0, ncol(grb$raster)),
-                ylim = c(0, nrow(grb$raster))) 
-    } else {
-        p <- ggplot()
-    }
-    p <- p + 
-        geom_point(
-            data = df,
-            shape = 16,
-            size = 0.5,
-            aes(x, y, col = .data[[col]])) + 
-        theme_void()
-    if (is.numeric(df[[col]])) {
-        p + scale_color_viridis_c()
-    } else {
-        p + theme(legend.key.size = unit(0.5, "lines")) +
-            guides(color = guide_legend(override.aes = list(size = 2)))
-    }
-}
-```
-
-We then use this function to overlay cell metadata attributes onto the image.
-
-```{r viz-cells, results = "asis", fig.width = 4, fig.height = 6, warning = FALSE}
-# for each segmentation...
-for (n in c("Baysor", "Cellpose"))
-{
-    cat("### ", n, " {.tabset} \n\n")
-    spe <- if(n == "Baysor") spe.baysor else spe.cellpose
-    df <- data.frame(
-        colData(spe), 
-        spatialCoords(spe))
-    rel.cols <- c("sample_id", "cell", "seg", "x", "y")
-    rel.cols <- setdiff(names(df), rel.cols)
-    # ...plot each variable
-    for (col in rel.cols)
-    {
-        p <- plotXY(df, col, mem.img)
-        cat("#### ", col, '{-}',"\n")
-        print(p)
-        cat("\n\n")
-    }
-}
+```{r viz-cells, results = "asis", fig.height = 8, warning = FALSE}
+spe.list <- list(Baysor = spe.baysor, Cellpose = spe.cellpose)
+plotTabset(spe.list, mem.img)
 ```
 
 ## Marker gene expression
@@ -301,37 +242,13 @@ poly.z1 <- subset(poly, z == 1)
 We add holes to the cell polygons:
 
 ```{r}
-.f <- function(df) 
-{
-    df$x <- df$x + 0.5 * (mean(df$x) - df$x)
-    df$y <- df$y + 0.5 * (mean(df$y) - df$y)
-    return(df)
-}
-spl <- split(poly.z1, poly.z1$cell)
-dl <- lapply(spl, .f)
-holes <- do.call(rbind, dl)  
-poly.z1$subid <- 1L
-holes$subid <- 2L
-poly.z1 <- rbind(poly.z1, holes)
+poly.z1 <- addHolesToPolygons(poly.z1)
 ```
 
 Plot over membrane image:
 
 ```{r, fig.height = 8}
-grb <- rasterGrob(mem.img,
-    interpolate = FALSE,
-    width = unit(1, "npc"),
-    height = unit(1, "npc"))
-p <- ggplot() + 
-    annotation_custom(
-        grob = grb,
-        xmin = 0,
-        xmax = ncol(grb$raster),
-        ymin = 0,
-        ymax = nrow(grb$raster)) + 
-    coord_fixed(
-        xlim = c(0, ncol(grb$raster)),
-        ylim = c(0, nrow(grb$raster))) 
+p <- plotRasterImage(mem.img)
 p <- p + geom_polygon(
             data = poly.z1,
             aes(x = x, y = y, group = cell, subgroup = subid), 

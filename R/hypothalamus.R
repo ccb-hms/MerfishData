@@ -27,23 +27,15 @@ MouseHypothalamusMoffitt2018 <- function(center.coords = TRUE)
     eh <- ExperimentHub::ExperimentHub()
     recs <- AnnotationHub::query(eh, c("MERFISH", "Mofitt2018"))
     
-    # (A) RAW
-    # (1) molecule data
-    #mol.dat <- .getResource(recs, "_molecules")
-    
-    # (2) image data
-    #if(use.images) img.dat <- .getImageData(recs)
-
-    # (B) PROCESSED
     seg.dat <- .getResource(recs, "_segmentation")
 
-    # (3) expression matrix (assay)
+    # (1) expression matrix (assay)
     ind <- grep("Neuron_cluster_ID", colnames(seg.dat))
     genes <- colnames(seg.dat)[(ind + 1):ncol(seg.dat)]
     exprs <- t(as.matrix(seg.dat[,genes]))
     colnames(exprs) <- NULL 
    
-    # (4) cell metadata (colData)
+    # (2) cell metadata (colData)
     cdat <- seg.dat[,seq_len(ind)]
     colnames(cdat)[c(2:3,5:7)] <- c("sample_id", "sex", "z", "x", "y")
     colnames(cdat) <- tolower(colnames(cdat))
@@ -52,7 +44,6 @@ MouseHypothalamusMoffitt2018 <- function(center.coords = TRUE)
     spe <- SpatialExperiment::SpatialExperiment(assays = list(exprs = exprs),
                                                 colData = cdat,
                                                 spatialCoordsNames = c("x", "y", "z"))
-
     return(spe)
 }
 
