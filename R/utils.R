@@ -47,6 +47,7 @@ plotXY <- function(df, col, img = NULL)
     if(!requireNamespace("ggpubr"))
         stop("Please install the 'ggpubr' package to use 'plotXY'")
 
+    .data <- x <- y <- NULL
     if(!is.null(img)) p <- plotRasterImage(img)
     else p <- ggplot2::ggplot()
     p <- p + ggplot2::geom_point(data = df,
@@ -73,37 +74,10 @@ plotXY <- function(df, col, img = NULL)
 #' @param img a raster object representing a bitmap image.
 #' @return None. Produces a tabset for rendering with \code{rmarkdown}.
 #' @examples
-#'     library(SpatialExperiment) 
 #'     # create simulated data as described in the SpatialExperiment man page
-#'     n <- 1000; ng <- 50; nc <- 20
-#'     # sample xy-coordinates in [0,1]
-#'     x <- runif(n)
-#'     y <- runif(n)
-#'     # assign each molecule to some gene-cell pair
-#'     gs <- paste0("gene", seq(ng))
-#'     cs <- paste0("cell", seq(nc))
-#'     gene <- sample(gs, n, TRUE)
-#'     cell <- sample(cs, n, TRUE)
-#'     # construct data.frame of molecule coordinates
-#'     df <- data.frame(gene, cell, x, y)
-#'     
-#'     # (assure gene & cell are factor so that
-#'     # missing observations aren't dropped)
-#'     df$gene <- factor(df$gene, gs)
-#'     df$cell <- factor(df$cell, cs)
-#'     
-#'     # construct BumpyMatrix
-#'     mol <- BumpyMatrix::splitAsBumpyMatrix(
-#'         df[, c("x", "y")],
-#'         row = df$gene, column = df$cell)
-#'     
-#'     # get count matrix
-#'     y <- with(df, table(gene, cell))
-#'     y <- as.matrix(unclass(y))
-#'     
-#'     # construct SpatialExperiment
-#'     spe <- SpatialExperiment(assays = list(counts = y, molecules = mol))
-#'
+#'     example("SpatialExperiment", package = "SpatialExperiment", echo = FALSE)
+#'     spe <- spe_mol   
+#' 
 #'     # add simulated cell centroids
 #'     s <- cbind(x = runif(20), y = runif(20))    
 #'     spatialCoords(spe) <- s 
@@ -128,7 +102,7 @@ plotTabset <- function(spe.list, img)
     {
         cat("### ", n, " {.tabset} \n\n")
         spe <- spe.list[[n]]
-        df <- data.frame(colData(spe),
+        df <- data.frame(SummarizedExperiment::colData(spe),
                          SpatialExperiment::spatialCoords(spe))
         rel.cols <- c("sample_id", "cell", "seg", "x", "y")
         rel.cols <- setdiff(names(df), rel.cols)

@@ -32,6 +32,7 @@ Imports:
     BumpyMatrix,
     ExperimentHub,
     S4Vectors,
+    SummarizedExperiment
 Suggests:
     grid,
     ggplot2, 
@@ -46,6 +47,7 @@ biocViews:
     ExpressionData,
     HighThroughputImagingData,
     Mus_musculus_Data,
+    SingleCellData,
     SpatialData
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
