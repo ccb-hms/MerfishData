@@ -33,6 +33,19 @@ Moffitt et al., 2018, developed an imaging-based cell type identification and
 mapping method and combined it with single-cell RNA-sequencing to create a
 molecularly annotated and spatially resolved cell atlas of the mouse hypothalamic
 preoptic region.
+
+The MERFISH measurements were obtained via combinatorial smFISH imaging for
+135 genes (main experiment named \code{"smFISH"}), followed by sequential rounds
+of non-combinatorial seqFISH for 20 additional genes (stored as an \code{altExp}
+named \code{"seqFISH"}). These genes were considered neuronal markers and important
+for discriminating neuronal cell populations. For behavioral measurements,
+cFos was added to the set of genes measured with sequential rounds of FISH.
+
+The barcoding scheme contained 140 possible barcodes; 135 of them were used to
+code the RNAs of the genes assayed via combinatorial smFISH; 5 of these barcodes
+were left unassigned ("blank"), providing a direct measure of the false-positive
+rate in MERFISH. Measurements for these 5 blank barcodes is stored in an
+\code{altExp} named \code{"blank"}.
 }
 \examples{
 spe <- MouseHypothalamusMoffitt2018()

@@ -53,21 +53,55 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
     
     # (A) RAW
     # (1) molecule data
+    counter <- 0
+    pb <- NULL
+    if(interactive())
+    {
+        nr.items <- length(recs) - 2
+        if(!use.images) nr.items <- nr.items - 2
+        if(!use.polygons) nr.items <- nr.items - 1
+        if(segmentation == "cellpose") nr.items <- nr.items - 1
+        pb <- txtProgressBar(counter, nr.items, style = 3)
+    }
+
     mol.dat <- .getResource(recs, "_molecules")
-    
+    if(interactive())
+    {
+        counter <- counter + 1
+        setTxtProgressBar(pb, counter)
+    }    
+
     # (2) image data
-    if(use.images) img.dat <- .getImageData(recs)
+    if(use.images)
+    {
+        img.dat <- .getImageData(recs, pb, counter)
+        if(interactive())
+        {
+            pb <- img.dat$pb
+            counter <- img.dat$counter
+        }
+    }
 
     # (B) PROCESSED
     # (3) counts
     suffix <- paste(segmentation, "counts", sep = "_")
     counts <- .getResource(recs, suffix)
     ass.dat <- list(counts = counts) 
+    if(interactive())
+    {
+        counter <- counter + 1
+        setTxtProgressBar(pb, counter)
+    }
 
     # (4) colData        
     suffix <- paste(segmentation, "coldata", sep = "_")
     col.dat <- .getResource(recs, suffix)
     scn <- c("x", "y", "z")
+    if(interactive())
+    {
+        counter <- counter + 1
+        setTxtProgressBar(pb, counter)
+    }
 
     # for baysor: add segmentation and polygons
     if(segmentation == "baysor")
@@ -76,6 +110,11 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         mol <- .getSegmentation(recs, mol.dat)
         ass.dat <- c(ass.dat, molecules = mol)
         scn <- scn[seq_len(2)]    
+        if(interactive())
+        {
+            counter <- counter + 1
+            setTxtProgressBar(pb, counter)
+        }
     }
     
     # create SpatialExperiment object
@@ -83,26 +122,40 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
                                                 colData = col.dat,
                                                 sample_id = "ileum",
                                                 spatialCoordsNames = scn)
-    if(use.images) SpatialExperiment::imgData(spe) <- img.dat
+    if(use.images) SpatialExperiment::imgData(spe) <- img.dat$img.dat
+
     # (6) polygons
     if(use.polygons && segmentation == "baysor")
+    {
         metadata(spe)$polygons <- .annotatePolygons(recs)
+        if(interactive())
+        {
+            counter <- counter + 1
+            setTxtProgressBar(pb, counter)
+        }
+    }
+
+    if(interactive()) close(pb)
     return(spe)
 }
 
-.getImageData <- function(recs)
+.getImageData <- function(recs, pb, counter)
 {
     # (a) DAPI images
     dapi.img <- .getResource(recs, "_dapi")
     dapi.img <- as.raster(dapi.img)
     dapi.img <- SpatialExperiment::SpatialImage(dapi.img)    
     dapi.img <- SpatialExperiment::mirrorImg(dapi.img, "h")
+    counter <- counter + 1
+    if(interactive()) setTxtProgressBar(pb, counter)
 
     # (b) Membrane marker images
     mem.img <- .getResource(recs, "_membrane")
     mem.img <- as.raster(mem.img)
     mem.img <- SpatialExperiment::SpatialImage(mem.img)    
     mem.img <- SpatialExperiment::mirrorImg(mem.img, "h")
+    counter <- counter + 1
+    if(interactive()) setTxtProgressBar(pb, counter)
 
     img.list <- list(dapi = dapi.img, mem = mem.img)
     img.data <- S4Vectors::DataFrame(
@@ -110,7 +163,7 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
                             image_id = c("dapi", "membrane"),
                             data = I(img.list),
                             scaleFactor = NA_real_)
-    return(img.data)
+    return(list(img.dat = img.data, pb = pb, counter = counter))
 }
 
 .getSegmentation <- function(recs, mol.dat)

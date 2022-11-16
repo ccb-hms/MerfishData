@@ -1,6 +1,6 @@
 Package: MerfishData
 Title: Collection of public MERFISH datasets
-Version: 0.99.4
+Version: 0.99.5
 Authors@R: 
     c(person("Ludwig", "Geistlinger", 
              role = c("aut", "cre"),
@@ -9,7 +9,7 @@ Authors@R:
       person("Tyrone", "Lee", role = "ctb"),
       person("Helena", "Crowell", role = "ctb",
              comment = c(ORCID = "0000-0002-4801-1767")),  
-      person("Jeffrey", "Mofitt", role = "aut"),
+      person("Jeffrey", "Moffitt", role = "aut"),
       person("Robert", "Gentleman", role = "aut"))
 Description: MerfishData is an ExperimentHub package that serves publicly available
     datasets obtained with Multiplexed Error-Robust Fluorescence in situ Hybridization
@@ -32,6 +32,7 @@ Imports:
     BumpyMatrix,
     ExperimentHub,
     S4Vectors,
+    SingleCellExperiment,
     SummarizedExperiment
 Suggests:
     grid,
@@ -51,4 +52,4 @@ biocViews:
     SpatialData
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.2

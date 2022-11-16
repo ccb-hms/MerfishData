@@ -15,4 +15,5 @@
 #' @import SpatialExperiment
 #' @importFrom grDevices as.raster
 #' @importFrom S4Vectors metadata metadata<-
+#' @importFrom utils setTxtProgressBar txtProgressBar
 NULL

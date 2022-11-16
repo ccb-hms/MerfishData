@@ -3,6 +3,15 @@ Collection of public MERFISH datasets
 
 ## Installation
 
+### Installation from Bioconductor
+
+The package is available from [Bioconductor](https://bioconductor.org/).
+Please follow the installation instructions on the
+[package landing page](https://bioconductor.org/packages/MerfishData)
+to install the package.
+
+### Installation from GitHub
+
 Make sure to have the latest release version of 
 [R](https://cran.r-project.org/) installed.
 
