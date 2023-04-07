@@ -48,30 +48,23 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
 {
     segmentation <- match.arg(segmentation)
 
+    # obtain records from ExperimentHub
     eh <- ExperimentHub::ExperimentHub()
     recs <- AnnotationHub::query(eh, c("MERFISH", "Petukhov2021"))
     
-    # (A) RAW
-    # (1) molecule data
+    # setup progress bar
     counter <- 0
     pb <- NULL
     if(interactive())
     {
         nr.items <- length(recs) - 2
         if(!use.images) nr.items <- nr.items - 2
-        if(!use.polygons) nr.items <- nr.items - 1
-        if(segmentation == "cellpose") nr.items <- nr.items - 1
+        if(segmentation == "baysor" && !use.polygons) nr.items <- nr.items - 1
+        if(segmentation == "cellpose") nr.items <- nr.items - 3
         pb <- txtProgressBar(counter, nr.items, style = 3)
     }
 
-    mol.dat <- .getResource(recs, "_molecules")
-    if(interactive())
-    {
-        counter <- counter + 1
-        setTxtProgressBar(pb, counter)
-    }    
-
-    # (2) image data
+    # (1) image data
     if(use.images)
     {
         img.dat <- .getImageData(recs, pb, counter)
@@ -82,8 +75,7 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         }
     }
 
-    # (B) PROCESSED
-    # (3) counts
+    # (2) counts
     suffix <- paste(segmentation, "counts", sep = "_")
     counts <- .getResource(recs, suffix)
     ass.dat <- list(counts = counts) 
@@ -93,7 +85,7 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         setTxtProgressBar(pb, counter)
     }
 
-    # (4) colData        
+    # (3) colData        
     suffix <- paste(segmentation, "coldata", sep = "_")
     col.dat <- .getResource(recs, suffix)
     scn <- c("x", "y", "z")
@@ -103,9 +95,17 @@ MouseIleumPetukhov2021 <- function(segmentation = c("baysor", "cellpose"),
         setTxtProgressBar(pb, counter)
     }
 
-    # for baysor: add segmentation and polygons
+    # for baysor: add molecules, segmentation, and polygons
     if(segmentation == "baysor")
     {
+        # (4) molecule data
+        mol.dat <- .getResource(recs, "_molecules")
+        if(interactive())
+        {
+            counter <- counter + 1
+            setTxtProgressBar(pb, counter)
+        }    
+
         # (5) segmentation
         mol <- .getSegmentation(recs, mol.dat)
         ass.dat <- c(ass.dat, molecules = mol)

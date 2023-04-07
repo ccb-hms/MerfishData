@@ -96,6 +96,7 @@ Inspect the data components:
 
 ```{r}
 assay(spe)[1:5,1:5]
+assay(spe, "molecules")["Aldh1l1",1]
 colData(spe)
 head(spatialCoords(spe))
 ```
@@ -146,12 +147,12 @@ ggscatter(cdat, x = "x", y = "y", color = "cell_class", facet.by = "z",
 # Interactive exploration
 
 The MERFISH mouse hypothalamus dataset is part of the
-[gallery of publicly available MERFISH datasets](https://ccb-rstudio-connect.hms.harvard.edu/merfish/merfish_homepage.html).
+[gallery of publicly available MERFISH datasets](https://moffittlab.connect.hms.harvard.edu/merfish/merfish_homepage.html).
 
 This gallery consists of dedicated 
 [iSEE](https://bioconductor.org/packages/iSEE) and 
 [Vitessce](http://vitessce.io/) instances, published on 
-[RStudioConnect](https://www.rstudio.com/products/connect/), 
+[Posit Connect](https://posit.co/products/enterprise/connect/), 
 that enable the interactive exploration of different segmentations,
 the expression of marker genes, and overlay of
 cell metadata on a spatial grid or a microscopy image.

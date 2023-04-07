@@ -1,6 +1,6 @@
 Package: MerfishData
 Title: Collection of public MERFISH datasets
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: 
     c(person("Ludwig", "Geistlinger", 
              role = c("aut", "cre"),
@@ -41,8 +41,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
-    BiocStyle,
-    ExperimentHubData
+    BiocStyle
 biocViews:
     ExperimentHub,
     ExpressionData,
