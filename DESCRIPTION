@@ -1,6 +1,6 @@
 Package: MerfishData
 Title: Collection of public MERFISH datasets
-Version: 1.11.0
+Version: 1.11.1
 Authors@R: 
     c(person("Ludwig", "Geistlinger", 
              role = c("aut", "cre"),
@@ -57,4 +57,4 @@ biocViews:
     SpatialData
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

@@ -74,27 +74,50 @@ plotXY <- function(df, col, img = NULL)
 #' @param img a raster object representing a bitmap image.
 #' @return None. Produces a tabset for rendering with \code{rmarkdown}.
 #' @examples
-#'     # create simulated data as described in the SpatialExperiment man page
-#'     example("SpatialExperiment", package = "SpatialExperiment", echo = FALSE)
-#'     spe <- spe_mol   
+#'  # create simulated data as described in the SpatialExperiment man page
+#'  n <- 1000; ng <- 50; nc <- 20
+#'  x <- runif(n)
+#'  y <- runif(n)
+#'
+#'  # assign each molecule to some gene-cell pair
+#'  gs <- paste0("gene", seq(ng))
+#'  cs <- paste0("cell", seq(nc))
+#'  gene <- sample(gs, n, TRUE)
+#'  cell <- sample(cs, n, TRUE)
+#'
+#'  # generate molecule coordinates
+#'  df <- data.frame(gene, cell, x, y)
+#'  df$gene <- factor(df$gene, gs)
+#'  df$cell <- factor(df$cell, cs)
+#'
+#'  mol <- BumpyMatrix::splitAsBumpyMatrix(
+#'          df[, c("x", "y")],
+#'          row = df$gene, column = df$cell)
+#'
+#'  # generate gene x cell molecule count matrix
+#'  y <- with(df, table(gene, cell))
+#'  y <- as.matrix(unclass(y))
+#'
+#'  # construct SpatialExperiment
+#'  spe <- SpatialExperiment(assays = list(counts = y, molecules = mol))
 #' 
-#'     # add simulated cell centroids
-#'     s <- cbind(x = runif(20), y = runif(20))    
-#'     spatialCoords(spe) <- s 
+#'  # add simulated cell centroids
+#'  s <- cbind(x = runif(20), y = runif(20))    
+#'  spatialCoords(spe) <- s 
 #'
-#'     # add simulated cell type and cell cycle annotation
-#'     ct <- c("ct1", "ct2", "ct3")
-#'     cc <- c("G1", "G2", "S", "M") 
-#'     spe$type <- sample(ct, ncol(spe), replace = TRUE)
-#'     spe$cycle <- sample(cc, ncol(spe), replace = TRUE)
+#'  # add simulated cell type and cell cycle annotation
+#'  ct <- c("ct1", "ct2", "ct3")
+#'  cc <- c("G1", "G2", "S", "M") 
+#'  spe$type <- sample(ct, ncol(spe), replace = TRUE)
+#'  spe$cycle <- sample(cc, ncol(spe), replace = TRUE)
 #'
-#'     # create an example image
-#'     hgrid <- hcl(0, 80, seq(50, 80, 10))
-#'     img <- as.raster(matrix(hgrid, nrow = 4, ncol = 5))
+#'  # create an example image
+#'  hgrid <- hcl(0, 80, seq(50, 80, 10))
+#'  img <- as.raster(matrix(hgrid, nrow = 4, ncol = 5))
 #'
-#'     # plotTabset
-#'     spe.list <- list(myseg = spe)
-#'     plotTabset(spe.list, img)  
+#'  # plotTabset
+#'  spe.list <- list(myseg = spe)
+#'  plotTabset(spe.list, img)  
 #' @export
 plotTabset <- function(spe.list, img)
 {
