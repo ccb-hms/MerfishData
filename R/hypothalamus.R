@@ -93,7 +93,7 @@ MouseHypothalamusMoffitt2018 <- function(center.coords = TRUE)
 .separateBlanks <- function(spe)
 {
     blanks <- paste("Blank", 1:5, sep = "_")
-    blank.exprs <- assay(spe)[blanks,]
+    blank.exprs <- SummarizedExperiment::assay(spe)[blanks,]
     blank.spe <- SpatialExperiment::SpatialExperiment(
                     assays = list(exprs = blank.exprs)) 
     ind <- setdiff(rownames(spe), blanks)
@@ -105,7 +105,7 @@ MouseHypothalamusMoffitt2018 <- function(center.coords = TRUE)
 .separateAnalogs <- function(spe, mol.dat)
 {
     sf.genes <- setdiff(rownames(spe), mol.dat$gene)
-    sf.exprs <- assay(spe)[sf.genes,]
+    sf.exprs <- SummarizedExperiment::assay(spe)[sf.genes,]
     sf.spe <- SpatialExperiment::SpatialExperiment(
                     assays = list(exprs = sf.exprs)) 
     ind <- setdiff(rownames(spe), sf.genes)

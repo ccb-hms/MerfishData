@@ -226,7 +226,7 @@ ind <- mol.dat$gene %in% gs
 rel.cols <- c("gene", "x_pixel", "y_pixel")
 sub.mol.dat <- mol.dat[ind, rel.cols]
 colnames(sub.mol.dat)[2:3] <- sub("_pixel$", "", colnames(sub.mol.dat)[2:3])
-plotXY(sub.mol.dat, "gene", mem.img)
+MerfishData::plotXY(sub.mol.dat, "gene", mem.img)
 ```
 
 ## Segmentation cell borders
